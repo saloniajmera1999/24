@@ -1,0 +1,81 @@
+#include<bits/stdc++.h>
+using namespace std;
+long long int comparisons=0;
+
+int partition(int arr[], int low, int high) 
+{ 
+	int pivot=arr[high];
+	int i=(low-1); 
+	for (int j=low;j<=high-1;j++) 
+	{ 
+		if (++comparisons && arr[j]<=pivot) 
+		{ 
+			i++;
+			swap(arr[i],arr[j]); 
+		} 
+	} 	
+	swap(arr[i+1],arr[high]); 
+	return(i+1); 
+} 
+void quickSort(int arr[],int low,int high) 
+{ 
+	if (low<high) 
+	{ 
+		int pi=partition(arr,low,high); 
+		quickSort(arr,low,pi-1); 
+		quickSort(arr,pi+1,high);
+		 
+	} 
+} 
+
+int main()
+{
+	int size,n;
+	cout<<"Enter size of data set:"<<endl;
+	cin>>size;
+	
+	ofstream ofs("qsort.txt");
+	if(ofs.is_open())
+	{
+		for(int i=1;i<=size;i++)
+		{
+			n=rand() % size+1;
+			ofs<<n;
+			ofs<<endl;
+		}
+		ofs.close();
+	}
+	else
+		cout<<"Unable to open file\n";
+		
+	
+	ifstream ifs("qsort.txt");
+	//ifstream ifs("qsortInc.txt");
+	//ifstream ifs("qsortDec.txt");
+	int arr[size];
+	int index=0;
+	while(!ifs.eof() && index<size)
+	{
+		ifs >> arr[index++];
+	}
+	auto start=std::chrono::system_clock::now();
+	quickSort(arr,0,size-1);
+	auto end=std::chrono::system_clock::now();
+	chrono::duration<double>diff=end-start;
+	
+	cout<<"Time: "<<diff.count()<<'\n';
+	cout<<"\nNumber of comparisons: "<<comparisons;
+	
+	ofstream myfile("resultQS.txt",ios::app);
+	//ofstream myfile("qSortIC.txt",ios::app);
+	//ofstream myfile("qSortDC.txt",ios::app);
+	if(myfile.is_open())
+	{
+		//myfile<<"Data Set\t\tTime\t\tComparisons"<<endl;
+		myfile<<size<<","<<diff.count()<<","<<comparisons<<"\n";
+		myfile.close();
+	}
+	else
+		cout<<"Unable to open file\n";
+	return 0;
+}
