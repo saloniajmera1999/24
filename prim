@@ -1,0 +1,58 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+int main(){
+	int n, m, u, v, w, source;
+	cout << "Enter number of vertices n(named 1...n): ";
+	cin >> n;
+	int graph[n + 1][n + 1];
+	for(int i = 0; i <= n; i++) 
+		memset(graph[i], 0, sizeof(graph[i]));
+	cout << "Enter number of edges: ";
+	cin >> m;
+	cout << "Enter edges and their weights:\n";
+	for(int i = 0; i < m; i++){
+		cin >> u >> v >> w;
+		if(u > n || v > n || u < 1 || v < 1){
+			cout << "Invalid vertices\n";
+			return -1;
+		}
+		graph[u][v] = graph[v][u] = w;
+	}
+	
+	int numEdge = 0;
+	bool selected[n + 1] = {false};
+	
+	cout << "Enter source vertex: ";
+	cin >> source;
+	if(source < 1 || source > n){
+		cout << "Invalid source vertex\n";
+		return -1;
+	}
+	selected[source] = true;
+	cout << "Edges and their weights that form the Minimum Spanning Tree\n";
+	cout << "Edge  :  Weight\n";
+	while(numEdge < n - 1){
+		int minm = INT_MAX;
+		v = 0;
+		u = source;
+		for(int i = 1; i <= n; i++){
+     	if(selected[i]){
+       	for(int j = 1; j <= n; j++){
+          	if (!selected[j] && graph[i][j]){
+            	if(minm > graph[i][j]){
+               	minm = graph[i][j];
+                 u = i;
+                 v = j;
+               }
+             }
+          }
+        }
+      }
+      cout << u <<  " - " << v << " :  " << graph[u][v];
+      cout << endl;
+      selected[v] = true;
+      numEdge++;
+   }		
+	return 0;
+}
