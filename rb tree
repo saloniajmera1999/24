@@ -1,0 +1,237 @@
+#include<iostream>
+#include<math.h>
+using namespace std;
+class node
+{
+	public:
+	int data;
+	node*left;
+	node*right;
+	node*p;
+	char color;
+	node(int d)
+	{
+		data=d;
+		left=0;
+		right=0;
+		p=0;
+		color='R';
+	}
+};
+class RBTree
+{
+	public:
+	node*root;
+	node*NIL;
+	RBTree()
+	{
+		NIL=new node(0);
+		NIL->color='B';
+		root=NIL;
+	}
+	void LeftRotate(node*);
+  	void RightRotate(node*);
+	void RB_Insert_Fixup(node*);
+	void RBInsert(node* );
+	void Inorder(node*);
+	void PrintLevel(node*,int);
+	int maxDepth(node*);
+	void printLevelOrder(node*);
+};
+
+
+
+ void RBTree::LeftRotate(node* x)
+ {
+ 	node*y=x->right;
+ 	x->right=y->left;
+ 	if(y->left!=NIL)
+ 		y->left->p=x;
+ 	y->p=x->p;
+ 	if(x->p==NIL)
+ 		root=y;
+ 	else {if(x==x->p->left)
+ 				x->p->left=y;
+ 			else
+ 				x->p->right=y;}
+ 	y->left=x;
+ 	x->p=y;	
+ }
+ void RBTree::RightRotate(node* x)
+ {
+	node*y=x->left;
+ 	x->left=y->right;
+ 	if(y->right!=NIL)
+ 		y->right->p=x;
+ 	y->p=x->p;
+ 	if(x->p==NIL)
+ 		root=y;
+ 	else {if(x==x->p->left)
+ 				x->p->left=y;
+ 			else
+ 				x->p->right=y;}
+ 	y->right=x;
+ 	x->p=y;	
+ }
+ 
+	void RBTree::RB_Insert_Fixup(node* z)
+	{
+
+	
+		while(z!=root&&z->p->color=='R')
+		{
+			if(z->p==z->p->p->left)
+			{
+				node*y=z->p->p->right;
+					if(y->color=='R')
+					{
+						z->p->color='B';
+						y->color='B';
+						z->p->p->color='R';
+						z=z->p->p;
+					}
+					else 
+					{
+						if(z==z->p->right)
+						{
+							z=z->p;
+							LeftRotate(z);
+						}
+						z->p->color='B';
+						z->p->p->color='R';
+						RightRotate(z->p->p);		
+					}
+			}
+			else
+			{
+					node*y;
+					y=z->p->p->left;
+						if(y->color=='R')
+						{
+							z->p->p->color='R';
+							z->p->color='B';
+							y->color='B';
+							z=z->p->p;
+						}
+						else 
+						{
+							if(z==z->p->left)
+							{
+								z=z->p;
+								RightRotate(z);
+							}
+							z->p->color='B';
+							z->p->p->color='R';
+							LeftRotate(z->p->p);		
+						}
+			}
+		}
+		root->color='B';
+	}
+
+
+
+
+ void RBTree::RBInsert(node* z)
+ {
+ 		node*y=NIL;
+ 		node* x=root;
+ 		while(x!=NIL)
+ 		{
+ 			y=x;
+ 			if(z->data<=x->data)
+ 			{
+ 				x=x->left;}
+			else{
+					x=x->right;
+				}
+ 		}
+ 		z->p=y;
+ 		if(y==NIL)
+ 		{	
+ 			root=z;
+
+ 		}else{
+ 					if(z->data<y->data)
+ 						y->left=z;
+ 					else
+ 						y->right=z;}
+ 						
+ 		z->left=NIL;
+ 		z->right=NIL;
+ 	
+ 		RB_Insert_Fixup(z);
+ 		//cout<<endl<<z->data<<z->color<<z->p->data<<z->p->color<<endl;
+		//cout<<root->data;
+ }
+
+void RBTree::Inorder(node*n)
+{
+ 		if(n==NIL)
+ 		{
+ 			return;}
+ 		Inorder(n->left);
+ 		cout<<n->data<<" "<<n->color<<endl;;
+ 		Inorder(n->right);
+}
+
+void RBTree:: PrintLevel(node* r, int level)
+{
+    if (r == NIL)
+        return;
+    if (level == 1)
+       cout<<r->data<<"("<<r->color<<")"<<" ";
+    else if (level > 1)
+    {
+        PrintLevel(r->left, level-1);
+        PrintLevel(r->right, level-1);
+    }
+}
+
+int RBTree::maxDepth(node* node) 
+{
+   if (node==NIL) 
+       return 0;
+   else 
+   {
+       /* compute the depth of each subtree */
+       int l = maxDepth(node->left);
+       int r = maxDepth(node->right);
+
+       /* use the larger one */
+       if (l>r) 
+           return(l+1);
+       else return(r+1);
+   }
+} 
+
+void RBTree::printLevelOrder( node* r)
+{
+    int h = maxDepth(root);
+    int i;
+    cout<<h;
+    for (i=1; i<=h; i++)
+    {
+        PrintLevel(r,i);
+		cout<<endl;
+	}
+}
+
+
+
+ int main()
+ {
+ 	RBTree A;
+ 	int val,no;
+ 	cout<<"Enter number of nodes  ";
+ 	cin>>no;
+	for(int i=0;i<no;i++)
+ 	{
+ 		cin>>val;
+		node* n=new node(val);
+ 		A.RBInsert(n);
+ 	}
+ 	cout<<endl;
+	A.printLevelOrder(A.root);
+ 	return 0;
+ }
