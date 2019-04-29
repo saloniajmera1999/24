@@ -1,0 +1,138 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class graph {
+	int v;
+	int **matrix;
+	public:
+		graph(int v) {
+			this->v = v;
+			matrix = new int*[v + 1];
+			for (int i = 1; i <= v; i++)
+				matrix[i] = new int[v + 1]();
+		}
+		
+		void add_edge(int i, int j) {
+			if (i < 0 || i > v || j < 0 || j > v)
+				throw "index out of bound\n";
+				
+			matrix[i][j] = 1;
+		}
+		
+		void remove_edge(int i, int j) {
+			if (i < 0 || i > v || j < 0 || j > v)
+				throw "index out of bound\n";
+				
+			matrix[i][j] = 0;
+		}
+		
+		void display() {
+			for (int i = 1; i <= v; i++) {
+				for (int j = 0; j <= v; j++)
+					cout << matrix[i][j] << " ";
+				cout << endl;
+			}
+		}
+		
+		bool empty() {
+			return !v;
+		}
+		
+		void bfs() {
+			if (empty()) {
+				cout << "graph is empty\n";
+				return;
+			}
+			
+			bool *visited = new bool[v + 1];
+			memset(visited, false, v + 1);
+			
+			list<int> q;
+			for (int i = 1; i <= v; i++) {
+				if (!visited[i])
+					q.push_back(i);
+				visited[i] = true;	
+				while (!q.empty()) {
+					int temp = q.front();
+					cout << temp << " ";
+					q.pop_front();
+					//visited[temp] = true;
+					for (int j = 1; j <= v; j++)
+						if ((matrix[temp][j]) == 1 && !visited[j])
+							visited[j] = true, q.push_back(j);
+				}
+			}
+		}
+		
+		void dfs(int s, bool visited[]) {
+			visited[s] = true;
+			cout << s << " ";
+			for (int j = 1; j <= v; j++) {
+				if (matrix[s][j] == 1 && !visited[j])
+					dfs(j, visited);
+			}
+		}
+		
+		void dfs() {
+			bool *visited = new bool[v + 1];
+			memset(visited, false, v + 1);
+			for (int i = 1; i <= v; i++)
+				if (!visited[i])
+					dfs(i, visited);
+		}
+		
+};
+
+int main() {
+	try {
+		int v, e;
+		cout << "Enter the no. of vertices: ";
+		cin >> v;
+		graph g(v);
+		cout << "Enter the no. of edges: ";
+		cin >> e;
+		char ch;
+		cout << "Graph is directed or undireceted[d/u]: ";
+		cin >> ch;
+		int x, y;
+		if (ch == 'd') {
+			cout << "Enter the vertex pairs:\n";
+			
+			for (int i = 0; i < e; i++) {
+				cin >> x >> y;
+				g.add_edge(x, y);
+			}
+			
+			cout << endl;
+			g.display();
+			cout << endl;
+		}
+	
+		else if (ch == 'u') {
+			cout << "Enter the vertex pairs:\n";
+			for (int i = 0; i < e; i++) {
+				cin >> x >> y;
+				g.add_edge(x, y);
+				g.add_edge(y, x);
+			}
+		}
+	
+		else {
+			cout << "Invalid input\n";
+			return 0;
+		}
+		
+		if (!g.empty()) {
+			cout << "DFS traversal of the graph:\n";
+			g.dfs();
+		}
+		
+		else {
+			g.bfs();
+		}
+	}
+	
+	catch (const char *error) {
+		cout << error << endl; 
+	}
+}
