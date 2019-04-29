@@ -1,0 +1,137 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class graph {
+	int v;
+	list<int> *adj;
+	int *d, *f;
+	public:
+		graph(int v) {
+			this->v = v;
+			adj = new list<int>[v + 1];
+		}
+		
+		void add_edge(int i, int j) {
+			if (i < 1 || i > v || j < 1 || j > v)
+				throw "invalid index\n";
+			adj[i].push_back(j);
+		}
+		
+		void bfs() {
+			bool *visited = new bool[v + 1];
+			memset(visited, false, v + 1);
+			
+			list<int> q;
+			for (int i = 1; i <= v; i++) {
+				if (!visited[i])
+					q.push_back(i);
+				visited[i] = true;
+				while (!q.empty()) {
+					int temp = q.front();
+					cout << temp << " ";
+					q.pop_front();
+					
+					for (auto itr = adj[temp].begin(); itr != adj[temp].end(); ++itr) {
+						if (!visited[*itr])
+						  visited[*itr] = true, q.push_back(*itr);
+					}
+				}
+			}
+		}
+		
+		void dfs() {
+			string *color = new string[v + 1];
+			d = new int[v + 1];
+			f = new int[v + 1];
+			for (int i = 1; i <= v; i++)
+				color[i] = "white";
+			
+			int *time = new int;
+			*time = 0;
+			
+			for (int i = 1; i <= v; i++) {
+				if (color[i] == "white")
+					dfs(i, color, time);
+			}
+			
+			vector<pair<int, int>> vec;
+			for (int i = 1; i <= v; i++) {
+				vec.push_back(make_pair(d[i], i));
+			}
+			
+			sort(vec.begin(), vec.end());
+			
+			//for (int i = 0; i < v; i++)
+			//	cout << vec[i].second << " ";
+		}
+		
+		void dfs_traversal() {
+			string *color = new string[v + 1];
+			d = new int[v + 1];
+			f = new int[v + 1];
+			for (int i = 1; i <= v; i++)
+				color[i] = "white";
+			
+			int *time = new int;
+			*time = 0;
+			
+			for (int i = 1; i <= v; i++) {
+				if (color[i] == "white")
+					dfs(i, color, time);
+			}
+			
+			vector<pair<int, int>> vec;
+			for (int i = 1; i <= v; i++) {
+				vec.push_back(make_pair(d[i], i));
+			}
+			
+			sort(vec.begin(), vec.end());
+			
+			for (int i = 0; i < v; i++)
+				cout << vec[i].second << " ";
+		}
+		
+		void dfs(int s, string *color, int *time) {
+			color[s] = "gray";
+			*time += 1;
+			d[s] = *time;
+			//cout << s << " ";
+			for (auto itr = adj[s].begin(); itr != adj[s].end(); ++itr)
+				if (color[*itr] == "white")
+					dfs(*itr, color, time);
+			color[s] = "black";
+			*time += 1;
+			f[s] = *time;
+		}
+		
+		void topological_sort() {
+			d = new int[v + 1];
+			f = new int[v + 1];
+			dfs();
+			vector<pair<int, int>> vec;
+			for (int i = 1; i <= v; i++) {
+				vec.push_back(make_pair(f[i], i));
+			}
+			
+			sort(vec.begin(), vec.end());
+			
+			for (int i = v - 1; i >=0; i--)
+				cout << vec[i].second << " ";
+		}
+};
+
+int main() {
+	
+	graph g(5);
+	g.add_edge(1, 2);
+	g.add_edge(1, 3);
+	g.add_edge(3, 2);
+	g.add_edge(3, 5);
+	g.add_edge(2, 4);
+	g.add_edge(4, 5);
+	g.bfs();
+	cout << endl;
+	g.dfs_traversal();
+	cout << endl;
+	g.topological_sort();
+}
