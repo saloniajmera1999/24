@@ -1,0 +1,32 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+void match(string txt, string pattern)
+{
+    int n = txt.length(), m = pattern.length();
+    for (int i = 0; i <= (n - m); i++)
+    {
+        int j;
+        for (j = 0; j < m; j++)
+            if (txt[i + j] != pattern[j])
+                break;
+        if (j == m)
+            cout << "Pattern found at " << i << '\n';
+    }
+}
+
+int main()
+{
+    string text, pattern;
+    cout << "Enter text: ";
+    cin >> text;
+    cout << "Enter pattern: ";
+    cin >> pattern;
+    if (text.length() < pattern.length())
+    {
+        cout << "Pattern greater than text length\n";
+        return 0;
+    }
+    match(text, pattern);
+    return 0;
+}
