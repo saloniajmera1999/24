@@ -1,0 +1,199 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+enum Color {RED, BLACK}; 
+
+class Node
+{
+    public:
+    Node *left, *right, *parent;
+    bool color;
+    int data;
+    Node(int d)
+    {
+        data = d;
+        left = right = parent = NULL;
+    }
+};
+
+class RBT
+{
+    Node *root;
+    public:
+    void rotateLeft(Node *&, Node *&);
+    void rotateRight(Node *&, Node *&);
+    void fix(Node *&, Node *&);
+    RBT()
+    {
+        root = NULL;
+    }
+    void insert(const int &n);
+    void levelOrder();
+    void levelOrder(Node *r);
+};
+
+Node* BSTInsert(Node *root, Node *pt)
+{
+    if (root == NULL)
+        return pt;
+    if (pt -> data < root -> data)
+    {
+        root -> left = BSTInsert(root->left, pt);
+        root -> left -> parent = root;
+    }
+    else if (pt->data > root-> data)
+    {
+        root -> right = BSTInsert(root -> right, pt);
+        root -> right -> parent = root;
+    }
+    return root;
+}
+
+void RBT :: rotateLeft(Node *&root, Node *&x)
+{
+    Node *y = x -> right;
+    x -> right = y -> left;
+    if (y -> left != NULL)
+        y -> left -> parent = x;
+    y -> parent = x -> parent;
+    if (x -> parent == NULL)
+    {
+        root = y;
+    }
+    else if (x == x -> parent -> left)
+        x -> parent -> left = y;
+    else 
+        x -> parent -> right = y;
+    y -> left = x;
+    x -> parent = y;
+}
+
+void RBT :: rotateRight(Node *&root, Node *&x)
+{
+    Node *y = x -> left;
+    x -> left = y -> right;
+    if (y -> right != NULL)
+        y -> right -> parent = x;
+    y -> parent = x -> parent;
+    if (x -> parent == NULL)
+    {
+        root = y;
+    }
+    else if (x == x -> parent -> left)
+        x -> parent -> left = y;
+    else 
+        x -> parent -> right = y;
+    y -> right = x;
+    x -> parent = y;
+}
+
+void RBT :: insert(const int &n)
+{
+    Node *pt = new Node(n);
+    root = BSTInsert(root, pt);
+    fix(root, pt);
+}
+
+void RBT :: fix(Node *&root, Node *&pt)
+{
+    Node *parentPt = NULL;
+    Node *grandPt = NULL;
+    while ((pt != root) && (pt -> color != BLACK) && (pt -> parent -> color == RED))
+    {
+        parentPt = pt -> parent;
+        grandPt = pt -> parent -> parent;
+
+        // If parent of pt is left child of grand parent
+        if (parentPt == grandPt -> left)
+        {
+            Node *siblingPt = grandPt -> right;
+            // Case 1: sibling of pt is red (recoloring)
+            if (siblingPt != NULL && siblingPt -> color == RED)
+            {
+                grandPt -> color = RED;
+                parentPt -> color = BLACK;
+                siblingPt -> color = BLACK;
+                pt = grandPt;
+            }
+            else 
+            {
+                // Case 2: pt is right child of its parent
+                if (pt == parentPt -> right)
+                {
+                    rotateLeft(root, parentPt);
+                    pt = parentPt;
+                    parentPt = pt -> parent;
+                }
+                // Case 3: pt is left child of its parent
+                rotateRight(root, grandPt);
+                swap(parentPt -> color, grandPt -> color);
+                pt = parentPt;
+            }
+        }
+        else 
+        {
+            Node *siblingPt = grandPt -> left;
+            // Case 1: sibling of pt is red (recoloring)
+            if (siblingPt != NULL && siblingPt -> color == RED)
+            {
+                grandPt -> color = RED;
+                parentPt -> color = BLACK;
+                siblingPt -> color = BLACK;
+                pt = grandPt;
+            }
+            else 
+            {
+                // Case 2: pt is left child of its parent
+                if (pt == parentPt -> left)
+                {
+                    rotateRight(root, parentPt);
+                    pt = parentPt;
+                    parentPt = pt -> parent;
+                }
+                // Case 3: pt is right child of its parent
+                rotateLeft(root, grandPt);
+                swap(parentPt -> color, grandPt -> color);
+                pt = parentPt;
+            }
+        }
+    }
+    root -> color = BLACK;
+}
+
+void RBT :: levelOrder()
+{
+    levelOrder(root);
+}
+
+void RBT :: levelOrder(Node *r)
+{
+    if (root == NULL)
+        return;
+    queue<Node *> q;
+    q.push(r);
+    while (!q.empty())
+    {
+        Node *temp = q.front();
+        cout << temp -> data << " ";
+        q.pop();
+        if (temp -> left != NULL)
+            q.push(temp -> left);
+        if (temp -> right != NULL)
+            q.push(temp -> right);
+    }
+}
+
+int main()
+{
+    RBT tree; 
+	tree.insert(7); 
+	tree.insert(6); 
+	tree.insert(5); 
+	tree.insert(4); 
+	tree.insert(3); 
+	tree.insert(2); 
+	tree.insert(1);
+	cout << "\n\nLevel Order Traversal of Created Tree\n"; 
+	tree.levelOrder(); 
+    return 0;
+}
